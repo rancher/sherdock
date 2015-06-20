@@ -61,13 +61,20 @@ func main() {
 	imagesToDelete := make(map[string]bool)
 
 	for image, i := range allImages {
+		//FIXME - add only when image is a leaf (not a parent to any other image)
 		if i == unused {
 			imagesToDelete[image] = true
 		}
 	}
 
-	log.Println("Unused Images: \n")
 	for image, _ := range imagesToDelete {
-		log.Println(image)
+		var removeMsg bytes.Buffer
+		removeMsg.WriteString("Removing unused image: ")
+		removeMsg.WriteString(image)
+		log.Println(removeMsg.String())
+		_, err := docker.RemoveImage(image)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
