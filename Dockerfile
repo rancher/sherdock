@@ -5,5 +5,6 @@ RUN go get github.com/cpuguy83/dockerclient \
   github.com/samalba/dockerclient \
   github.com/hashicorp/golang-lru
 COPY . /go/src/github.com/rancherio/sherdock
-CMD go run /go/src/github.com/rancherio/sherdock/main.go
-
+WORKDIR /go/src/github.com/rancherio/sherdock
+RUN go build -o /usr/bin/sherdock /go/src/github.com/rancherio/sherdock/main.go
+CMD sherdock
