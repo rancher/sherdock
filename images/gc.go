@@ -10,11 +10,28 @@ import (
 )
 
 func RunGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) error {
+	for {
+		done, err := runGC(docker, untagged, filters...)
+		if err != nil {
+			return err
+		}
+
+		if done {
+			break
+		}
+	}
+
+	return nil
+}
+
+func runGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) (bool, error) {
+	done := true
+
 	fmt.Println("Starting images GC")
 	// list all the containers
 	containers, err := docker.ListContainers(true, false, "")
 	if err != nil {
-		return err
+		return true, err
 	}
 
 	hasChild := make(map[string]bool)
@@ -22,7 +39,7 @@ func RunGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) 
 
 	images, err := docker.ListImages()
 	if err != nil {
-		return err
+		return true, err
 	}
 
 	for _, i := range images {
@@ -53,7 +70,7 @@ func RunGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) 
 			for _, filter := range filters {
 				matched, err := regexp.Match(filter, []byte(tag))
 				if err != nil {
-					return err
+					return true, err
 				}
 				if matched {
 					fmt.Println("matched ", tag, " to ", filter)
@@ -70,12 +87,13 @@ func RunGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) 
 			if err != nil {
 				fmt.Printf("Failed to delete %s: %v\n", image.Id, err)
 			}
+			done = false
 		}
 	}
 
 	fmt.Println("Done with images GC")
 
-	return nil
+	return done, nil
 }
 
 func StartGC() error {
