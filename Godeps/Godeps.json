@@ -12,6 +12,11 @@
 			"Rev": "efee32dcc339fb4f680a1b84bef771c79cc4190c"
 		},
 		{
+			"ImportPath": "github.com/cpuguy83/dockerclient",
+			"Comment": "v0.01",
+			"Rev": "f8f66dd5f272e78ae0c69da7180d1461b281b0a5"
+		},
+		{
 			"ImportPath": "github.com/docker/docker/pkg/units",
 			"Comment": "v1.4.1-4206-g67f9bbc",
 			"Rev": "67f9bbcbd4d741e22e61b21a411cd904dcd4329c"
