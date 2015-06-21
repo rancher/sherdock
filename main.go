@@ -22,7 +22,7 @@ type DockerResource struct {
 func (u DockerResource) Register(container *restful.Container) {
 	ws := new(restful.WebService)
 	ws.
-		Path("/images").
+		Path("/api/images").
 		Doc("Show Images").
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
@@ -35,7 +35,7 @@ func (u DockerResource) Register(container *restful.Container) {
 
 	ws = new(restful.WebService)
 	ws.
-		Path("/containers").
+		Path("/api/containers").
 		Doc("Show Containers").
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
@@ -48,7 +48,7 @@ func (u DockerResource) Register(container *restful.Container) {
 
 	ws = new(restful.WebService)
 	ws.
-		Path("/volumes").
+		Path("/api/volumes").
 		Doc("Show Volumes").
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
@@ -159,6 +159,15 @@ func main() {
 	wsContainer := restful.NewContainer()
 	u := DockerResource{url: "unix:///var/run/docker.sock"}
 	u.Register(wsContainer)
+
+	cors := restful.CrossOriginResourceSharing{
+		ExposeHeaders:  []string{"X-My-Header"},
+		AllowedHeaders: []string{"Content-Type"},
+		CookiesAllowed: false,
+		Container:      wsContainer}
+	wsContainer.Filter(cors.Filter)
+
+	wsContainer.Filter(wsContainer.OPTIONSFilter)
 
 	// Optionally, you can install the Swagger Service which provides a nice Web UI on your REST API
 	// You need to download the Swagger HTML5 assets and change the FilePath location in the config below.
