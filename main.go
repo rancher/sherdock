@@ -4,7 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/cpuguy83/dockerclient"
+	"github.com/cloudnautique/go-vol/volumes"
+	//"github.com/cpuguy83/dockerclient"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
 	"github.com/rancherio/sherdock/containers"
@@ -125,50 +126,15 @@ func (u DockerResource) getContainers(request *restful.Request, response *restfu
 	}
 }
 
-type Volume struct {
-	//HostPath    string
-	VolPath     string
-	IsReadWrite bool
-	IsBindMount bool
-	ContainerId string
-}
-
 func (u DockerResource) getVolumes(request *restful.Request, response *restful.Response) {
 
-	client, err := docker.NewClient(u.url)
-
-	containers, err := client.FetchAllContainers(true)
-
+	vols := &volumes.Volumes{}
+	err := vols.GetVolumes("/var/lib/docker/volumes")
 	if err != nil {
-		log.Println(err)
+		log.Fatalf("Error: %v", err)
 	}
 
-	volumes := make(map[string][]Volume)
-
-	for _, container := range containers {
-		container, err = client.FetchContainer(container.Id)
-
-		if err != nil {
-			log.Println(err)
-		}
-		containerVolumes, _ := container.GetVolumes()
-
-		for _, volume := range containerVolumes {
-			volumeWithContainerId := Volume{}
-
-			volumeWithContainerId.VolPath = volume.VolPath
-			volumeWithContainerId.IsReadWrite = volume.IsReadWrite
-			volumeWithContainerId.IsBindMount = volume.IsBindMount
-			volumeWithContainerId.ContainerId = container.Id
-
-			if _, ok := volumes[volume.HostPath]; !ok {
-				volumes[volume.HostPath] = make([]Volume, 0)
-			}
-			volumes[volume.HostPath] = append(volumes[volume.HostPath], volumeWithContainerId)
-		}
-	}
-
-	response.WriteEntity(volumes)
+	response.WriteEntity(vols)
 
 }
 
