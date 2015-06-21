@@ -6,10 +6,8 @@ import (
 	"time"
 	"github.com/rancherio/sherdock/config"
 )
-var ToPull = []string { "tianon/true",  "rancher/server" }
 
 var url = "unix:///var/run/docker.sock"
-var PullDelay = 1
 
 func pullImages() error {
 	fmt.Println("Making clinet")
