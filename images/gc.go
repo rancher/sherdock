@@ -1,7 +1,7 @@
 package images
 
 import (
-	"fmt"
+	"log"
 	"regexp"
 	"time"
 
@@ -9,9 +9,9 @@ import (
 	"github.com/samalba/dockerclient"
 )
 
-func RunGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) error {
+func RunGC(docker *dockerclient.DockerClient, filters ...string) error {
 	for {
-		done, err := runGC(docker, untagged, filters...)
+		done, err := runGC(docker, filters...)
 		if err != nil {
 			return err
 		}
@@ -24,74 +24,54 @@ func RunGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) 
 	return nil
 }
 
-func runGC(docker *dockerclient.DockerClient, untagged bool, filters ...string) (bool, error) {
+func runGC(dockerClient *dockerclient.DockerClient, filters ...string) (bool, error) {
 	done := true
 
-	fmt.Println("Starting images GC")
-	// list all the containers
-	containers, err := docker.ListContainers(true, false, "")
+	images, err := dockerClient.ListImages()
 	if err != nil {
 		return true, err
 	}
 
-	hasChild := make(map[string]bool)
-	inUse := make(map[string]bool)
+	imagesToSave := make(map[string]bool)
 
-	images, err := docker.ListImages()
-	if err != nil {
-		return true, err
+	for _, image := range images {
+		for _, repoTag := range image.RepoTags {
+			for _, regexFilter := range filters {
+				if match, _ := regexp.MatchString(regexFilter, repoTag); match {
+					imagesToSave[image.Id] = true
+				}
+			}
+		}
 	}
 
 	for _, i := range images {
-		hasChild[i.ParentId] = true
+		if i.ParentId != "" {
+			imagesToSave[i.ParentId] = true
+		}
+	}
+
+	containers, err := dockerClient.ListContainers(true, false, "")
+	if err != nil {
+		return true, err
 	}
 
 	for _, c := range containers {
-		info, _ := docker.InspectContainer(c.Id)
-		inUse[info.Image] = true
+		info, _ := dockerClient.InspectContainer(c.Id)
+		imagesToSave[info.Image] = true
 	}
 
 	for _, image := range images {
-		if hasChild[image.Id] || inUse[image.Id] {
-			continue
-		}
-
-		del := false
-	outer:
-		for _, tag := range image.RepoTags {
-			if tag == "<none>:<none>" {
-				del = untagged
-				if del {
-					fmt.Println("untagged ", image.Id)
-				}
-				break
-			}
-
-			for _, filter := range filters {
-				matched, err := regexp.Match(filter, []byte(tag))
-				if err != nil {
-					return true, err
-				}
-				if matched {
-					fmt.Println("matched ", tag, " to ", filter)
-					del = true
-					break outer
-				}
-			}
-
-		}
-
-		if del {
-			fmt.Println("Deleteing image id ", image.Id, " name ", image.RepoTags)
-			_, err := docker.RemoveImage(image.Id)
-			if err != nil {
-				fmt.Printf("Failed to delete %s: %v\n", image.Id, err)
-			}
+		if !imagesToSave[image.Id] {
+			log.Println("Deleting image with image id ", image.Id, " name ", image.RepoTags)
 			done = false
+			_, err = dockerClient.RemoveImage(image.Id)
+			if err != nil {
+				log.Println("Failed to delete image: ", err)
+			}
 		}
 	}
 
-	fmt.Println("Done with images GC")
+	log.Println("Done with images GC")
 
 	return done, nil
 }
@@ -103,7 +83,7 @@ func StartGC() error {
 			return err
 		}
 
-		RunGC(client, config.Conf.GCUntagged, config.Conf.ImagesToGC...)
+		RunGC(client, config.Conf.ImagesToNotGC...)
 
 		time.Sleep(time.Duration(config.Conf.GCIntervalMinutes) * time.Minute)
 		config.LoadGlobalConfig()
