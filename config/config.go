@@ -19,7 +19,7 @@ var Conf Config
 
 func configFileName(name string) string {
 	if name == "" {
-		name = "config.yaml"
+		name = "config.yml"
 	}
 	return name
 }
@@ -61,7 +61,7 @@ func SaveConfig(config *Config, name string) error {
 }
 
 func LoadGlobalConfig() error {
-	config, err := GetConfig("config.yml")
+	config, err := GetConfig("")
 	if err != nil {
 		return err
 	}
