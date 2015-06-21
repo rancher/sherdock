@@ -68,7 +68,7 @@ func (u DockerResource) getImages(request *restful.Request, response *restful.Re
     }
 
     // Get only running containers
-    containers, err := docker.ListImages()
+    containers, err := ListImages(docker)
     response.WriteEntity(containers)
     if err != nil {
     	log.Println(err)
@@ -149,4 +149,3 @@ func main() {
 	server := &http.Server{Addr: ":8080", Handler: wsContainer}
 	log.Fatal(server.ListenAndServe())
 }
-
