@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+IMAGE=sherdock-dev
+PORT=${PORT:-8080}
+
+cd $(dirname $0)/..
+docker build -t $IMAGE .
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker:/var/lib/docker -it -p ${PORT}:8080 $IMAGE

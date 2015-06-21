@@ -15,20 +15,20 @@ type DetailedImageInfo struct {
 	Size        int64
 	VirtualSize int64
 
-	Architecture    string
-	Author          string
-	Comment         string
+	Architecture string
+	Author       string
+	Comment      string
 	//Config          *ContainerConfig
-	Container       string
+	Container string
 	//ContainerConfig *ContainerConfig
-	DockerVersion   string
-	Os              string
+	DockerVersion string
+	Os            string
 }
 
 var imageCache, _ = lru.New(1024)
 
-func ListImagesDetailed(dockerClient *dockerclient.DockerClient) ([]*DetailedImageInfo, error) {
-	images, err := dockerClient.ListImages()
+func ListImagesDetailed(dockerClient *dockerclient.DockerClient, all bool) ([]*DetailedImageInfo, error) {
+	images, err := dockerClient.ListImages(all)
 	if err != nil {
 		return nil, err
 	}
@@ -36,18 +36,18 @@ func ListImagesDetailed(dockerClient *dockerclient.DockerClient) ([]*DetailedIma
 	for i, image := range images {
 		imagesDetails, _ := InspectImage(dockerClient, image.Id)
 		detailedImageInfo := DetailedImageInfo{
-			Created: image.Created,
-			Id: image.Id,
-			ParentId: image.ParentId,
-			RepoTags: image.RepoTags,
-			Size: image.Size,
-			VirtualSize: image.VirtualSize,
-			Architecture: imagesDetails.Architecture,
-			Author: imagesDetails.Author,
-			Comment: imagesDetails.Comment,
-			Container: imagesDetails.Container,
+			Created:       image.Created,
+			Id:            image.Id,
+			ParentId:      image.ParentId,
+			RepoTags:      image.RepoTags,
+			Size:          image.Size,
+			VirtualSize:   image.VirtualSize,
+			Architecture:  imagesDetails.Architecture,
+			Author:        imagesDetails.Author,
+			Comment:       imagesDetails.Comment,
+			Container:     imagesDetails.Container,
 			DockerVersion: imagesDetails.Container,
-			Os: imagesDetails.Os }
+			Os:            imagesDetails.Os}
 		result[i] = &detailedImageInfo
 	}
 	return result, nil
