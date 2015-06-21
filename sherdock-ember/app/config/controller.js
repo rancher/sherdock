@@ -32,7 +32,7 @@ export default Ember.Controller.extend({
     }
 
     var last = vals.objectAt(vals.get('length')-1);
-    if ( last && last.value )
+    if ( !last || (last && last.value) )
     {
       vals.pushObject({value: ''});
     }
@@ -51,7 +51,7 @@ export default Ember.Controller.extend({
     }
 
     var last = vals.objectAt(vals.get('length')-1);
-    if ( last && last.value )
+    if ( !last || (last && last.value) )
     {
       vals.pushObject({value: ''});
     }
