@@ -83,7 +83,7 @@ func StartGC() error {
 			return err
 		}
 
-		RunGC(client, config.Conf.ImagesToNotGC...)
+		RunGC(client, append(config.Conf.ImagesToNotGC, config.Conf.ImagesToPull...)...)
 
 		time.Sleep(time.Duration(config.Conf.GCIntervalMinutes) * time.Minute)
 		config.LoadGlobalConfig()
