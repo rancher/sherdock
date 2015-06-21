@@ -13,7 +13,7 @@ DockerCon 2015 Hackathon Project
 
 ## Running
 
-    docker run -d -v /var/lib/docker:/var/lib/docker -v /var/run/docker.sock:/var/run/docker.sock -p 8080:8080 rancherio/sherdock
+    docker run -d -v /var/lib/docker:/var/lib/docker -v /var/run/docker.sock:/var/run/docker.sock -p 8080:8080 rancher/sherdock
 
 UI at http://localhost:8008
 

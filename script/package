@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-IMAGE=rancherio/sherdock
+IMAGE=rancher/sherdock
 BUILD=${IMAGE}-build
 
 cd $(dirname $0)/..
