@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	yaml "gopkg.in/yaml.v2"
@@ -9,6 +9,8 @@ type Config struct {
 	PullIntervalMinutes int
 	Images []string
 }
+
+var conf = Config{}
 
 func configFileName(name string) string{
 	if name == "" {
@@ -32,7 +34,6 @@ func GetConfig(name string) (*Config, error) {
 	}
 	data, err := ioutil.ReadFile(configFileName(name))
 	if err != nil && b {
-		fmt.Println( "Failing" )
 		return  nil, err
 	}
 	if err != nil && !b {
@@ -40,15 +41,10 @@ func GetConfig(name string) (*Config, error) {
 		SaveConfig(a, "")
 		return a, nil
 	}
-	fmt.Printf( "%s", data )
 	err = yaml.Unmarshal(data, &config)
-	fmt.Printf( "%#v After unmarshal \n", config)
 	if  err == nil {
-		fmt.Printf( "%#v No Err\n", config)
 		return &config, nil
 	} else  {
-		fmt.Printf( "%#v Err\n", config)
-		fmt.Printf( "%v Err\n", err)
 		return nil, err
 	}
 }
@@ -64,11 +60,13 @@ func SaveConfig(config *Config, name string) error {
 	return err
 }
 
-func main() {
-	config, err := GetConfig("")
+func main1() {
+	config, err := GetConfig("yaml")
 	if err == nil {
 		fmt.Printf( "Config %#v" , config)
 	} else {
 		fmt.Printf( "Err %#v", err)
 	}
+	conf = *config
+	fmt.Printf("\n\n\n Config   %#v", conf)
 }
