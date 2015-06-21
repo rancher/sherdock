@@ -19,5 +19,7 @@ export default Ember.Route.extend({
     controller.set('images', (model.ImagesToPull||[]).map((val) => {
       return {value: val};
     }));
+    controller.gcRegexDidChange();
+    controller.imagesDidChange();
   },
 });

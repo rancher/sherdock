@@ -4,7 +4,7 @@ export default Ember.ArrayController.extend({
   actions: {
     removeAll: function() {
       this.get('store').rawRequest({
-        url: 'images',
+        url: 'volumes',
         method: 'DELETE',
       }).then(() => {
         this.send('refresh');
@@ -13,7 +13,7 @@ export default Ember.ArrayController.extend({
 
     remove: function(volumeId) {
       this.get('store').rawRequest({
-        url: 'images/'+volumeId,
+        url: 'volumes/'+volumeId,
         method: 'DELETE',
       }).then(() => {
         this.send('refresh');
