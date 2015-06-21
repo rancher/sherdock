@@ -2,17 +2,22 @@ package images
 
 import (
 	"github.com/samalba/dockerclient"
+	"fmt"
 )
+var ToPull = []string { "tianon/true",  "rancher/server" }
 
-func PullImage(dockerClient *dockerclient.DockerClient) ([]*dockerclient.ImageInfo, error) {
-	images, err := dockerClient.ListImages()
+var url = "unix:///var/run/docker.sock"
+
+func PullImages() error {
+	dockerClient, err := dockerclient.NewDockerClient(url, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	var result = make([]*dockerclient.ImageInfo, len(images))
-	for i, image := range images {
-		tempResult, _ := InspectImage(dockerClient, image.Id)
-		result[i] = tempResult
+	for _,element := range ToPull {
+		err := dockerClient.PullImage(element, nil)
+		if  err != nil {
+			fmt.Printf("While Pulling: %#v", err)
+		}
 	}
-	return result, nil
+	return  nil
 }
