@@ -154,14 +154,10 @@ func main() {
 	u := DockerResource{url: "unix:///var/run/docker.sock"}
 	u.Register(wsContainer)
 
-	cors := restful.CrossOriginResourceSharing{
-		ExposeHeaders:  []string{"X-My-Header"},
-		AllowedHeaders: []string{"Content-Type"},
-		CookiesAllowed: false,
-		Container:      wsContainer}
-	wsContainer.Filter(cors.Filter)
-
-	wsContainer.Filter(wsContainer.OPTIONSFilter)
+	wsContainer.Filter(func(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+		resp.AddHeader("Access-Control-Allow-Origin", "*")
+		chain.ProcessFilter(req, resp)
+	})
 
 	// Optionally, you can install the Swagger Service which provides a nice Web UI on your REST API
 	// You need to download the Swagger HTML5 assets and change the FilePath location in the config below.
