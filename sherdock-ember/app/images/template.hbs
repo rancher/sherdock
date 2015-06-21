@@ -1,0 +1,30 @@
+<h2>Images</h2>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th width="100">ID</th>
+      <th width="100">Parent</th>
+      <th>Tags</th>
+      <th width="100">Size</th>
+      <th width="100">Virtual Size</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each image in this}}
+      <tr>
+        <td>{{short-id image.Id}}&hellip;</td>
+        <td>{{short-id image.ParentId}}&hellip;</td>
+        <td>
+          {{#each tag in image.RepoTags}}
+            {{#unless (eq tag "<none>:<none>")}}
+              <span class="label label-primary">{{tag}}</span>
+            {{/unless}}
+          {{/each}}
+        </td>
+        <td>{{display-size image.Size}}</td>
+        <td>{{display-size image.VirtualSize}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
