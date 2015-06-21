@@ -104,6 +104,14 @@ func (u DockerResource) getContainers(request *restful.Request, response *restfu
 	}
 }
 
+type Volume struct {
+	HostPath    string
+	VolPath     string
+	IsReadWrite bool
+	IsBindMount bool
+	ContainerId string
+}
+
 func (u DockerResource) getVolumes(request *restful.Request, response *restful.Response) {
 
 	client, err := docker.NewClient(u.url)
@@ -114,7 +122,7 @@ func (u DockerResource) getVolumes(request *restful.Request, response *restful.R
 		log.Println(err)
 	}
 
-	volumes := make([]docker.Volume, 0)
+	volumes := make([]Volume, 0)
 
 	for _, container := range containers {
 		container, err = client.FetchContainer(container.Id)
@@ -125,7 +133,15 @@ func (u DockerResource) getVolumes(request *restful.Request, response *restful.R
 		containerVolumes, _ := container.GetVolumes()
 
 		for _, volume := range containerVolumes {
-			volumes = append(volumes, *volume)
+			volumeWithContainerId := Volume{}
+
+			volumeWithContainerId.HostPath = volume.HostPath
+			volumeWithContainerId.VolPath = volume.VolPath
+			volumeWithContainerId.IsReadWrite = volume.IsReadWrite
+			volumeWithContainerId.IsBindMount = volume.IsBindMount
+			volumeWithContainerId.ContainerId = container.Id
+
+			volumes = append(volumes, volumeWithContainerId)
 		}
 	}
 
