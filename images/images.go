@@ -1,9 +1,10 @@
-package main
+package images
 
 import (
-	"github.com/samalba/dockerclient"
-	lru "github.com/hashicorp/golang-lru"
 	"fmt"
+
+	lru "github.com/hashicorp/golang-lru"
+	"github.com/samalba/dockerclient"
 )
 
 var imageCache, _ = lru.New(1024)
@@ -13,7 +14,7 @@ func ListImagesDetailed(dockerClient *dockerclient.DockerClient) ([]*dockerclien
 	if err != nil {
 		return nil, err
 	}
-	var result = make([]*dockerclient.ImageInfo,len(images))
+	var result = make([]*dockerclient.ImageInfo, len(images))
 	for i, image := range images {
 		tempResult, _ := InspectImage(dockerClient, image.Id)
 		result[i] = tempResult

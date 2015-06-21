@@ -3,9 +3,10 @@ package main
 import (
 	"bytes"
 	"crypto/tls"
-	"github.com/samalba/dockerclient"
 	"log"
 	"os"
+
+	"github.com/samalba/dockerclient"
 )
 
 // Callback used to listen to Docker's events
@@ -13,7 +14,7 @@ func eventCallback(event *dockerclient.Event, ec chan error, args ...interface{}
 	log.Printf("Received event: %#v\n", *event)
 }
 
-func main() {
+func main1() {
 	var tlsc tls.Config
 	var certPath = os.Getenv("DOCKER_CERT_PATH")
 	var certPem bytes.Buffer
