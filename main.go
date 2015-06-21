@@ -6,13 +6,12 @@ import (
 	"net/http"
 
 	"github.com/cloudnautique/go-vol/volumes"
-	//"github.com/cpuguy83/dockerclient"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
+	"github.com/rancherio/sherdock/config"
 	"github.com/rancherio/sherdock/containers"
 	"github.com/rancherio/sherdock/images"
 	"github.com/samalba/dockerclient"
-	"github.com/rancherio/host-api/config"
 )
 
 type Response struct {
@@ -141,6 +140,10 @@ func (u DockerResource) getVolumes(request *restful.Request, response *restful.R
 }
 
 func main() {
+	err := config.LoadGlobalConfig()
+	if err != nil {
+		log.Fatal("Failed to load config", err)
+	}
 
 	// to see what happens in the package, uncomment the following
 	//restful.TraceLogger(log.New(os.Stdout, "[restful] ", log.LstdFlags|log.Lshortfile))
