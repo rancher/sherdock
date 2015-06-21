@@ -16,6 +16,7 @@
     "ember-addons.bs_for_ember": "~0.7.0",
     "dagre": "~0.7.1",
     "dagre-d3": "~0.4.3",
-    "bootstrap-sass-official": "~3.3.5"
+    "bootstrap-sass-official": "~3.3.5",
+    "cytoscape": "~2.4.2"
   }
 }
