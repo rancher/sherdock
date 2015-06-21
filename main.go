@@ -31,6 +31,11 @@ func (u DockerResource) Register(container *restful.Container) {
 		Operation("findUser").
 		Writes(Response{}))
 
+	ws.Route(ws.DELETE("/{id}").To(u.deleteImage).
+		Operation("findUser").
+		Param(ws.PathParameter("id", "identifier of the image").DataType("string")).
+		Writes(Response{}))
+
 	container.Add(ws)
 
 	ws = new(restful.WebService)
@@ -75,6 +80,23 @@ func (u DockerResource) getImages(request *restful.Request, response *restful.Re
 		log.Fatal("Unable to fetch running containers")
 	}
 	response.WriteEntity(images)
+}
+
+func (u DockerResource) deleteImage(request *restful.Request, response *restful.Response) {
+
+	id := request.PathParameter("id")
+
+	docker, err := dockerclient.NewDockerClient(u.url, nil)
+
+	if err != nil {
+		log.Fatal("Couldn't connect to docker client")
+	}
+
+	_, err = docker.RemoveImage(id)
+
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	}
 }
 
 func (u DockerResource) getContainers(request *restful.Request, response *restful.Response) {
