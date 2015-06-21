@@ -1,4 +1,4 @@
-package sherdock
+package main
 
 import (
 	"github.com/samalba/dockerclient"
@@ -8,7 +8,7 @@ import (
 
 var imageCache, _ = lru.New(1024)
 
-func ListImages(dockerClient *dockerclient.DockerClient) ([]*dockerclient.ImageInfo, error) {
+func ListImagesDetailed(dockerClient *dockerclient.DockerClient) ([]*dockerclient.ImageInfo, error) {
 	images, err := dockerClient.ListImages()
 	if err != nil {
 		return nil, err
