@@ -2,15 +2,29 @@
   <div class="col-md-6">
     <p>
       <h2>Garbage Collection</h2>
-      Every {{input value=GCIntervalMinutes class="form-control" style="display: inline-block; width: 100px;"}} minutes
+      Every {{input value=model.GCIntervalMinutes class="form-control" style="display: inline-block; width: 100px;"}} minutes, delete images that <b>do not</b> match regular expressions:
     </p>
+    {{#each obj in gcRegex}}
+      <div class="input-group">
+        <span class="input-group-addon">/</span>
+        {{input value=obj.value class="form-control"}}
+        <span class="input-group-addon">/</span>
+      </div>
+    {{/each}}
   </div>
   <div class="col-md-6">
     <h2>Image Pull</h2>
     <p>
-      Every {{input value=PullIntervalMinutes class="form-control" style="display: inline-block; width: 100px;"}} minutes
+      Every {{input value=model.PullIntervalMinutes class="form-control" style="display: inline-block; width: 100px;"}} minutes, pull the latest version of these images:
     </p>
+    {{#each obj in images}}
+      {{input value=obj.value class="form-control"}}
+    {{/each}}
   </div>
 </div>
 
-<button class="btn btn-primary">Save</button>
+<br/>
+<br/>
+<div style="text-align: center">
+  <button class="btn btn-primary" {{action "save"}}>Save</button>
+</div>
