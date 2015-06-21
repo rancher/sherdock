@@ -10,6 +10,7 @@ Router.map(function() {
   this.resource('graph');
   this.resource('containers');
   this.resource('volumes');
+  this.route('config');
 });
 
 export default Router;
