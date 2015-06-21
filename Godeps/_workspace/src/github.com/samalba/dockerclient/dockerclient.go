@@ -523,7 +523,7 @@ func (client *DockerClient) ListImages() ([]*Image, error) {
 }
 
 func (client *DockerClient) RemoveImage(name string) ([]*ImageDelete, error) {
-	uri := fmt.Sprintf("/%s/images/%s", APIVersion, name)
+	uri := fmt.Sprintf("/%s/images/%s?force=1", APIVersion, name)
 	data, err := client.doRequest("DELETE", uri, nil, nil)
 	if err != nil {
 		return nil, err

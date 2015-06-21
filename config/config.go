@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
+	GCIntervalMinutes   int
 	PullIntervalMinutes int
-	DeleteUntagged      bool
+	GCUntagged          bool
 	ImagesToGC          []string
 }
 
@@ -25,8 +26,9 @@ func configFileName(name string) string {
 
 func defaultConfig() *Config {
 	config := Config{
+		GCIntervalMinutes:   5,
 		PullIntervalMinutes: 60,
-		DeleteUntagged:      true,
+		GCUntagged:          true,
 		ImagesToGC:          []string{".*"},
 	}
 
