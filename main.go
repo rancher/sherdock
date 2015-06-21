@@ -145,6 +145,8 @@ func main() {
 		log.Fatal("Failed to load config", err)
 	}
 
+	go images.StartGC()
+
 	// to see what happens in the package, uncomment the following
 	//restful.TraceLogger(log.New(os.Stdout, "[restful] ", log.LstdFlags|log.Lshortfile))
 

@@ -31,7 +31,7 @@
 		},
 		{
 			"ImportPath": "github.com/samalba/dockerclient",
-			"Rev": "75460450bfec11215af853d79b6bf11b85f35739"
+			"Rev": "7effb3633b1fe27ce098e912be49618807a2f65d"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
