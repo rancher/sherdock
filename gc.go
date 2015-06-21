@@ -2,8 +2,9 @@ package main
 
 import (
 	"log"
-	"github.com/samalba/dockerclient"
 	"regexp"
+
+	"github.com/samalba/dockerclient"
 )
 
 func GC(dockerClient *dockerclient.DockerClient, regexFilter string) error {
