@@ -11,7 +11,7 @@ import (
 type Config struct {
 	GCIntervalMinutes   int
 	PullIntervalMinutes int
-	ImagesToPull		[]string
+	ImagesToPull        []string
 	ImagesToNotGC       []string
 }
 
@@ -28,8 +28,8 @@ func defaultConfig() *Config {
 	config := Config{
 		GCIntervalMinutes:   5,
 		PullIntervalMinutes: 60,
-		ImagesToPull:          []string{ "ubuntu", "busybox" },
-		ImagesToNotGC:       []string{ "rancher/server" },
+		ImagesToPull:        []string{"ubuntu:latest", "busybox:latest"},
+		ImagesToNotGC:       []string{"rancher/server"},
 	}
 
 	return &config

@@ -27,7 +27,7 @@ func RunGC(docker *dockerclient.DockerClient, filters ...string) error {
 func runGC(dockerClient *dockerclient.DockerClient, filters ...string) (bool, error) {
 	done := true
 
-	images, err := dockerClient.ListImages()
+	images, err := dockerClient.ListImages(true)
 	if err != nil {
 		return true, err
 	}
@@ -38,6 +38,7 @@ func runGC(dockerClient *dockerclient.DockerClient, filters ...string) (bool, er
 		for _, repoTag := range image.RepoTags {
 			for _, regexFilter := range filters {
 				if match, _ := regexp.MatchString(regexFilter, repoTag); match {
+					log.Printf("Image %v matches regexp /%s/ to keep\n", image.Id, regexFilter)
 					imagesToSave[image.Id] = true
 				}
 			}
@@ -46,6 +47,7 @@ func runGC(dockerClient *dockerclient.DockerClient, filters ...string) (bool, er
 
 	for _, i := range images {
 		if i.ParentId != "" {
+			log.Printf("Image %s has children\n", i.ParentId)
 			imagesToSave[i.ParentId] = true
 		}
 	}
@@ -57,12 +59,13 @@ func runGC(dockerClient *dockerclient.DockerClient, filters ...string) (bool, er
 
 	for _, c := range containers {
 		info, _ := dockerClient.InspectContainer(c.Id)
+		log.Printf("Image %s in use by container %v\n", info.Image, c.Id)
 		imagesToSave[info.Image] = true
 	}
 
 	for _, image := range images {
 		if !imagesToSave[image.Id] {
-			log.Println("Deleting image with image id ", image.Id, " name ", image.RepoTags)
+			log.Printf("Deleting image with image id %s %v\n", image.Id, image.RepoTags)
 			done = false
 			_, err = dockerClient.RemoveImage(image.Id)
 			if err != nil {
