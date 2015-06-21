@@ -7,6 +7,7 @@
   <thead>
     <tr>
       <th width="100">ID</th>
+      <th width="100">Container</th>
       <th colspan="2">Path</th>
       <th width="80">In Use</th>
       <th width="80">&nbsp;</th>
@@ -16,6 +17,7 @@
     {{#each volume in this}}
       <tr {{bind-attr class="volume.Attached:info"}}>
         <td rowspan="2">{{short-id volume.ID}}&hellip;</td>
+        <td rowspan="2">{{short-id volume.ContainerID}}&hellip;</td>
         <td width="80">Host:</td>
         <td>
           {{volume.DockerPath}}
@@ -30,7 +32,7 @@
       <tr {{bind-attr class="volume.Attached:info"}}>
         <td width="80">Container:</td>
         <td>
-          {{volume.Path}}
+          {{volume.ContainerPath}}
         </td>
       </tr>
     {{/each}}

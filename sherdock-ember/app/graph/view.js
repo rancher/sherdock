@@ -7,46 +7,11 @@ export default Ember.View.extend({
   },
 
   initGraph: function() {
-    var outer = d3.select("#graph svg");
-    var inner = outer.select("g");
-    var zoom = d3.behavior.zoom().on("zoom", function() {
-       inner.attr("transform", "translate(" + d3.event.translate + ")" +
-                                   "scale(" + d3.event.scale + ")");
-    });
-
-    outer.call(zoom);
-
-    var g = new dagreD3.graphlib.Graph().setGraph({
-      rankdir: "LR",
-      nodesep: 20,
-      ranksep: 50,
-      marginx: 10,
-      marginy: 10
-    });
-
-    var render = new dagreD3.render();
-
-    this.setProperties({
-      graphZoom: zoom,
-      graphOuter: outer,
-      graphInner: inner,
-      graphRender: render,
-      graph: g
-    });
-
-    this.updateGraph();
-  },
-
-  updateGraph: function() {
-    var g = this.get('graph');
-
-    var edgeOpts = {
-      arrowhead: 'vee',
-      lineInterpolate: 'linear',
-    };
-
+    var edges = [];
+    var nodes = [];
     var seenIds = {};
     var volumes = this.get('context');
+
     volumes.forEach(function(volume) {
       var tag = (volume.RepoTags||[])[0];
       if ( tag === '<none>:<none>' )
@@ -54,43 +19,81 @@ export default Ember.View.extend({
         tag = volume.Id.substr(0,8)+'...';
       }
 
-      g.setNode(volume.Id, {
-        label: tag,
-      });
+      if ( !volume.Id || !volume.ParentId )
+      {
+        return;
+      }
 
+      console.log('Adding', tag, volume.Id, volume.ParentId);
+      nodes.push({ data: { id: volume.Id, name: tag } });
       seenIds[volume.Id] = true;
     });
 
     volumes.forEach(function(volume) {
       if ( seenIds[volume.ParentId] && seenIds[volume.Id] )
       {
-        g.setEdge(volume.ParentId, volume.Id, edgeOpts);
-        console.log('Edge from', volume.ParentId.substr(0,8),'to',volume.Id.substr(0,8));
+        console.log('Edge from', volume.ParentId.substr(0,8),'to',volume.Id.substr(0,8),'for',volume.RepoTags);
+        edges.push({ data: { source: volume.ParentId, target: volume.Id } });
       }
     });
 
-    this.renderGraph();
-  },
+    $('#graph').cytoscape({
+      style: cytoscape.stylesheet()
+        .selector('node')
+          .css({
+            'content': 'data(name)',
+            'text-valign': 'center',
+            'color': 'white',
+            'text-outline-width': 2,
+            'text-outline-color': '#888'
+          })
+        .selector('edge')
+          .css({
+            'target-arrow-shape': 'triangle'
+          })
+        .selector(':selected')
+          .css({
+            'background-color': 'black',
+            'line-color': 'black',
+            'target-arrow-color': 'black',
+            'source-arrow-color': 'black'
+          })
+        .selector('.faded')
+          .css({
+            'opacity': 0.25,
+            'text-opacity': 0
+          }),
+      elements: {
+        nodes: nodes,
+        edges: edges,
+      },
 
-  renderGraph: function() {
-    var zoom = this.get('graphZoom');
-    var render = this.get('graphRender');
-    var inner = this.get('graphInner');
-    var outer = this.get('graphOuter');
-    var g = this.get('graph');
+      layout: {
+        name: 'grid',
+        padding: 10
+      },
 
-    inner.call(render, g);
+      // on graph initial layout done (could be async depending on layout...)
+      ready: function(){
+        window.cy = this;
 
-    // Zoom and scale to fit
-    var zoomScale = zoom.scale();
-    var graphWidth = g.graph().width;
-    var graphHeight = g.graph().height;
-    var width = $('#svg').width();
-    var height = $('#svg').height();
-    zoomScale = Math.min(2.0, Math.min(width / graphWidth, height / graphHeight));
-    var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
-    zoom.translate(translate);
-    zoom.scale(zoomScale);
-    zoom.event(outer);
+        // giddy up...
+        cy.elements().unselectify();
+
+        cy.on('tap', 'node', function(e){
+          var node = e.cyTarget; 
+          var neighborhood = node.neighborhood().add(node);
+
+          cy.elements().addClass('faded');
+          neighborhood.removeClass('faded');
+        });
+
+        cy.on('tap', function(e){
+          if( e.cyTarget === cy ){
+            cy.elements().removeClass('faded');
+          }
+        });
+      }
+    });
   },
 });

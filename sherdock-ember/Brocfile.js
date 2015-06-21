@@ -38,9 +38,6 @@ var app = new EmberApp({
 app.import('bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js');
 
 app.import('bower_components/d3/d3.js');
-app.import('bower_components/lodash/dist/lodash.js');
-app.import('bower_components/graphlib/dist/graphlib.core.js');
-app.import('bower_components/dagre/dist/dagre.core.js');
-app.import('bower_components/dagre-d3/dist/dagre-d3.core.js');
+app.import('bower_components/cytoscape/dist/cytoscape.js');
 
 module.exports = app.toTree();
