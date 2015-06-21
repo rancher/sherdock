@@ -1,4 +1,4 @@
-package sherdock
+package main
 
 import (
 	"github.com/samalba/dockerclient"
