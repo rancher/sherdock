@@ -8,7 +8,7 @@ DockerCon 2015 Hackathon Project
 ## Features
 
 * Automatic GC of images based on regexp
-* Find and delete orphan Docker volumes
+* Find and delete orphan Docker volumes (requires Docker 1.7)
 * UI
 
 ## Running
