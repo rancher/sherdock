@@ -1,0 +1,24 @@
+@import "bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap";
+
+.logo {
+  background-image: url('images/logo.svg');
+  height: 600px;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon {
+  stroke: #333;
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+
+.edgePath path {
+  stroke: #333;
+  fill: #333;
+  stroke-width: 1.5px;
+}
