@@ -9,7 +9,7 @@
 		},
 		{
 			"ImportPath": "github.com/cloudnautique/go-vol/volumes",
-			"Rev": "efee32dcc339fb4f680a1b84bef771c79cc4190c"
+			"Rev": "47d1c87e33bc22bab8966a495ec12df3ec97c1d8"
 		},
 		{
 			"ImportPath": "github.com/docker/docker/pkg/units",

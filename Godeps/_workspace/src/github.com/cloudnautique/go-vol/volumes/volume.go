@@ -14,10 +14,12 @@ const (
 )
 
 type Volume struct {
-	ID         string
-	Attached   bool
-	Path       string
-	DockerPath string
+	ID            string
+	Attached      bool
+	Path          string
+	DockerPath    string
+	ContainerPath string
+	ContainerID   string
 }
 
 type Volumes map[string]Volume
@@ -113,10 +115,12 @@ func (v Volumes) setAttachedVolumes() error {
 	// loop over existing containers
 	for _, container := range existingContainers {
 		containerInfo, _ := client.InspectContainer(container.ID)
-		for _, val := range containerInfo.Volumes {
+		for containerPath, val := range containerInfo.Volumes {
 			if _, exists := v[val]; exists {
 				volume := v[val]
 				volume.Attached = true
+				volume.ContainerPath = containerPath
+				volume.ContainerID = containerInfo.ID
 				v[val] = volume
 			}
 		}
