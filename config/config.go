@@ -13,6 +13,7 @@ type Config struct {
 	PullIntervalMinutes int
 	GCUntagged          bool
 	ImagesToGC          []string
+	ImagesToPull		[]string
 }
 
 var Conf Config
@@ -30,6 +31,7 @@ func defaultConfig() *Config {
 		PullIntervalMinutes: 60,
 		GCUntagged:          true,
 		ImagesToGC:          []string{".*"},
+		ImagesToPull:          []string{ "ubuntu", "busybox" },
 	}
 
 	return &config
