@@ -3,8 +3,8 @@
     "document",
     "window",
     "-Promise",
-    "d3",
-    "dagreD3",
+    "cy",
+    "cytoscape",
     "$"
   ],
   "browser": true,
