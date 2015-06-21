@@ -2,15 +2,14 @@ package main
 
 import (
 	"log"
-
 	"net/http"
 
-	"github.com/cloudnautique/go-vol/volumes"
+	"github.com/cpuguy83/dockerclient"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
-	"github.com/rancherio/sherdock/config"
 	"github.com/rancherio/sherdock/containers"
 	"github.com/rancherio/sherdock/images"
+	"github.com/rancherio/sherdock/config"
 	"github.com/samalba/dockerclient"
 )
 
@@ -61,6 +60,23 @@ func (u DockerResource) Register(container *restful.Container) {
 		Produces(restful.MIME_JSON)
 
 	ws.Route(ws.GET("/").To(u.getVolumes).
+		Operation("findUser").
+		Writes(Response{}))
+
+	container.Add(ws)
+
+	ws = new(restful.WebService)
+	ws.
+		Path("/api/config").
+		Doc("Show Volumes").
+		Consumes(restful.MIME_JSON, restful.MIME_XML).
+		Produces(restful.MIME_JSON)
+
+	ws.Route(ws.GET("/").To(u.getConfig).
+		Operation("findUser").
+		Writes(Response{}))
+
+	ws.Route(ws.POST("/").To(u.postConfig).
 		Operation("findUser").
 		Writes(Response{}))
 
@@ -127,23 +143,74 @@ func (u DockerResource) getContainers(request *restful.Request, response *restfu
 	}
 }
 
+type Volume struct {
+	//HostPath    string
+	VolPath     string
+	IsReadWrite bool
+	IsBindMount bool
+	ContainerId string
+}
+
 func (u DockerResource) getVolumes(request *restful.Request, response *restful.Response) {
 
-	vols := &volumes.Volumes{}
-	err := vols.GetVolumes("/var/lib/docker/volumes")
+	client, err := docker.NewClient(u.url)
+
+	containers, err := client.FetchAllContainers(true)
+
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		log.Println(err)
 	}
 
-	response.WriteEntity(vols)
+	volumes := make(map[string][]Volume)
+
+	for _, container := range containers {
+		container, err = client.FetchContainer(container.Id)
+
+		if err != nil {
+			log.Println(err)
+		}
+		containerVolumes, _ := container.GetVolumes()
+
+		for _, volume := range containerVolumes {
+			volumeWithContainerId := Volume{}
+
+			volumeWithContainerId.VolPath = volume.VolPath
+			volumeWithContainerId.IsReadWrite = volume.IsReadWrite
+			volumeWithContainerId.IsBindMount = volume.IsBindMount
+			volumeWithContainerId.ContainerId = container.Id
+
+			if _, ok := volumes[volume.HostPath]; !ok {
+				volumes[volume.HostPath] = make([]Volume, 0)
+			}
+			volumes[volume.HostPath] = append(volumes[volume.HostPath], volumeWithContainerId)
+		}
+	}
+
+	response.WriteEntity(volumes)
+
+}
+
+func (u DockerResource) getConfig(request *restful.Request, response *restful.Response) {
+
+	cfg, _ := config.GetConfig("")
+	response.WriteEntity(cfg)
+
+}
+
+func (u DockerResource) postConfig(request *restful.Request, response *restful.Response) {
+
+	//cfg := new(config.Config)
+	//err := request.ReadEntity(&cfg)
+
+	//if err != nil {
+	//	response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	//}
+
+	response.WriteEntity("")
 
 }
 
 func main() {
-	err := config.LoadGlobalConfig()
-	if err != nil {
-		log.Fatal("Failed to load config", err)
-	}
 
 	// to see what happens in the package, uncomment the following
 	//restful.TraceLogger(log.New(os.Stdout, "[restful] ", log.LstdFlags|log.Lshortfile))
