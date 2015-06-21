@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/rancherio/sherdock",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.4.1",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -20,6 +20,10 @@
 			"ImportPath": "github.com/docker/docker/pkg/units",
 			"Comment": "v1.4.1-4206-g67f9bbc",
 			"Rev": "67f9bbcbd4d741e22e61b21a411cd904dcd4329c"
+		},
+		{
+			"ImportPath": "github.com/elazarl/go-bindata-assetfs",
+			"Rev": "bea323321994103859d60197d229f1a94699dde3"
 		},
 		{
 			"ImportPath": "github.com/emicklei/go-restful",
