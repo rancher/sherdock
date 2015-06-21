@@ -12,7 +12,7 @@ export default Ember.Controller.extend({
         data:  {
           GCIntervalMinutes: parseInt(this.get('model.GCIntervalMinutes'),10),
           PullIntervalMinutes: parseInt(this.get('model.PullIntervalMinutes'),10),
-          ImagesToGC: this.get('gcRegex').map((entry) => {return entry.value; }).filter((entry) => {return !!entry;}),
+          ImagesToNotGC: this.get('gcRegex').map((entry) => {return entry.value; }).filter((entry) => {return !!entry;}),
           ImagesToPull: this.get('images').map((entry) => {return entry.value; }).filter((entry) => {return !!entry;}),
         }
       });
