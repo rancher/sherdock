@@ -264,7 +264,7 @@ func main() {
 	}
 
 	go images.StartGC()
-
+	go images.StartImageUpdate()
 	// to see what happens in the package, uncomment the following
 	//restful.TraceLogger(log.New(os.Stdout, "[restful] ", log.LstdFlags|log.Lshortfile))
 
