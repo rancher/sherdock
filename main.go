@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/cloudnautique/go-vol/volumes"
 	"github.com/cpuguy83/dockerclient"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
@@ -60,6 +61,15 @@ func (u DockerResource) Register(container *restful.Container) {
 		Produces(restful.MIME_JSON)
 
 	ws.Route(ws.GET("/").To(u.getVolumes).
+		Operation("findUser").
+		Writes(Response{}))
+
+	ws.Route(ws.DELETE("/{id}").To(u.deleteVolume).
+		Operation("findUser").
+		Param(ws.PathParameter("id", "identifier of the volume").DataType("string")).
+		Writes(Response{}))
+
+	ws.Route(ws.DELETE("/").To(u.deleteVolumes).
 		Operation("findUser").
 		Writes(Response{}))
 
@@ -151,6 +161,28 @@ type Volume struct {
 	ContainerId string
 }
 
+func (u DockerResource) deleteVolumes(request *restful.Request, response *restful.Response) {
+	vols := &volumes.Volumes{}
+
+	err := vols.DeleteAllOrphans(false)
+
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	}
+}
+
+func (u DockerResource) deleteVolume(request *restful.Request, response *restful.Response) {
+
+	id := request.PathParameter("id")
+	vols := &volumes.Volumes{}
+
+	err := vols.DeleteVolume(id)
+
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	}
+}
+
 func (u DockerResource) getVolumes(request *restful.Request, response *restful.Response) {
 
 	client, err := docker.NewClient(u.url)
@@ -212,6 +244,8 @@ func (u DockerResource) postConfig(request *restful.Request, response *restful.R
 
 func main() {
 
+	go images.StartGC()
+
 	// to see what happens in the package, uncomment the following
 	//restful.TraceLogger(log.New(os.Stdout, "[restful] ", log.LstdFlags|log.Lshortfile))
 
@@ -219,14 +253,10 @@ func main() {
 	u := DockerResource{url: "unix:///var/run/docker.sock"}
 	u.Register(wsContainer)
 
-	cors := restful.CrossOriginResourceSharing{
-		ExposeHeaders:  []string{"X-My-Header"},
-		AllowedHeaders: []string{"Content-Type"},
-		CookiesAllowed: false,
-		Container:      wsContainer}
-	wsContainer.Filter(cors.Filter)
-
-	wsContainer.Filter(wsContainer.OPTIONSFilter)
+	wsContainer.Filter(func(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+		resp.AddHeader("Access-Control-Allow-Origin", "*")
+		chain.ProcessFilter(req, resp)
+	})
 
 	// Optionally, you can install the Swagger Service which provides a nice Web UI on your REST API
 	// You need to download the Swagger HTML5 assets and change the FilePath location in the config below.

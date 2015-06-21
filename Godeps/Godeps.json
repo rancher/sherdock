@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/rancherio/sherdock",
-	"GoVersion": "go1.4.1",
+	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -9,7 +9,7 @@
 		},
 		{
 			"ImportPath": "github.com/cloudnautique/go-vol/volumes",
-			"Rev": "8ec91d7e247c49b569517834080b619e0b3ca9ff"
+			"Rev": "efee32dcc339fb4f680a1b84bef771c79cc4190c"
 		},
 		{
 			"ImportPath": "github.com/docker/docker/pkg/units",
@@ -31,7 +31,7 @@
 		},
 		{
 			"ImportPath": "github.com/samalba/dockerclient",
-			"Rev": "75460450bfec11215af853d79b6bf11b85f35739"
+			"Rev": "7effb3633b1fe27ce098e912be49618807a2f65d"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
