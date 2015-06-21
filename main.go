@@ -68,7 +68,7 @@ func (u DockerResource) getImages(request *restful.Request, response *restful.Re
     }
 
     // Get only running containers
-    containers, err := ListImages(docker)
+    containers, err := ListImagesDetailed(docker)
     response.WriteEntity(containers)
     if err != nil {
     	log.Println(err)
@@ -85,12 +85,20 @@ func (u DockerResource) getContainers(request *restful.Request, response *restfu
     	log.Fatal("Couldn't connect to docker client")
     }
 
-    // Get only running containers
-    containers, err := docker.ListContainers(true, false, "")
-    response.WriteEntity(containers)
-    if err != nil {
-    	log.Println(err)
-        log.Fatal("Unable to fetch running containers")
+    if request.QueryParameter("detailed") == "false" {
+	    containers, err := docker.ListContainers(true, false, "")
+	   	if err != nil {
+	    	log.Println(err)
+	        log.Fatal("Unable to fetch running containers")
+	    }
+	    response.WriteEntity(containers)
+    } else {
+	    containers, err := ListContainersDetailed(docker)
+	   	if err != nil {
+	    	log.Println(err)
+	        log.Fatal("Unable to fetch running containers")
+	    }
+	    response.WriteEntity(containers)
     }
 }
 
