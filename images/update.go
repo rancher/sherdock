@@ -1,8 +1,6 @@
 package images
 
 import (
-	"fmt"
-	lru "github.com/hashicorp/golang-lru"
 	"github.com/samalba/dockerclient"
 )
 
