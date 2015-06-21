@@ -1,18 +1,22 @@
 package config
 
 import (
-	yaml "gopkg.in/yaml.v2"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"os"
+
+	yaml "gopkg.in/yaml.v2"
 )
+
 type Config struct {
 	PullIntervalMinutes int
-	Images []string
+	DeleteUntagged      bool
+	ImagesToGC          []string
 }
 
-var conf = Config{}
+var Conf Config
 
-func configFileName(name string) string{
+func configFileName(name string) string {
 	if name == "" {
 		name = "config.yaml"
 	}
@@ -20,53 +24,46 @@ func configFileName(name string) string{
 }
 
 func defaultConfig() *Config {
-	config := Config{}
-	config.Images = []string { "JAMESCONFIG" }
-	config.PullIntervalMinutes = 60
+	config := Config{
+		PullIntervalMinutes: 60,
+		DeleteUntagged:      true,
+		ImagesToGC:          []string{".*"},
+	}
+
 	return &config
 }
 
 func GetConfig(name string) (*Config, error) {
 	config := Config{}
-	b := true
-	if name == "" {
-		b = false
-	}
 	data, err := ioutil.ReadFile(configFileName(name))
-	if err != nil && b {
-		return  nil, err
-	}
-	if err != nil && !b {
+	if os.IsNotExist(err) {
 		a := defaultConfig()
 		SaveConfig(a, "")
 		return a, nil
 	}
-	err = yaml.Unmarshal(data, &config)
-	if  err == nil {
-		return &config, nil
-	} else  {
+	if err != nil {
 		return nil, err
 	}
+	err = yaml.Unmarshal(data, &config)
+	return &config, err
 }
 
 func SaveConfig(config *Config, name string) error {
 	data, err := yaml.Marshal(&config)
 	if err != nil {
 		fmt.Println("Failed to marshal the config.")
-		return nil
+		return err
 	}
-	fmt.Printf("%s", data)
 	ioutil.WriteFile(configFileName(name), data, 0644)
 	return err
 }
 
-func main1() {
-	config, err := GetConfig("yaml")
-	if err == nil {
-		fmt.Printf( "Config %#v" , config)
-	} else {
-		fmt.Printf( "Err %#v", err)
+func LoadGlobalConfig() error {
+	config, err := GetConfig("config.yml")
+	if err != nil {
+		return err
 	}
-	conf = *config
-	fmt.Printf("\n\n\n Config   %#v", conf)
+	Conf = *config
+
+	return nil
 }
