@@ -13,7 +13,7 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     controller.set('model', model);
-    controller.set('gcRegex', (model.ImagesToGC||[]).map((val) => {
+    controller.set('gcRegex', (model.ImagesToNotGC||[]).map((val) => {
       return {value: val};
     }));
     controller.set('images', (model.ImagesToPull||[]).map((val) => {
