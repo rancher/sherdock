@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,9 +9,9 @@ import (
 	"github.com/cpuguy83/dockerclient"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
+	"github.com/rancherio/sherdock/config"
 	"github.com/rancherio/sherdock/containers"
 	"github.com/rancherio/sherdock/images"
-	"github.com/rancherio/sherdock/config"
 	"github.com/samalba/dockerclient"
 )
 
@@ -230,19 +231,32 @@ func (u DockerResource) getConfig(request *restful.Request, response *restful.Re
 }
 
 func (u DockerResource) postConfig(request *restful.Request, response *restful.Response) {
+	var cfg config.Config
+	err := request.ReadEntity(&cfg)
 
-	//cfg := new(config.Config)
-	//err := request.ReadEntity(&cfg)
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	}
 
-	//if err != nil {
-	//	response.WriteErrorString(http.StatusInternalServerError, err.Error())
-	//}
+	fmt.Println("Saving config")
+	err = config.SaveConfig(&cfg, "")
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	response.WriteEntity("")
-
+	err = config.LoadGlobalConfig()
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+		return
+	}
 }
 
 func main() {
+	err := config.LoadGlobalConfig()
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
 
 	go images.StartGC()
 
