@@ -64,6 +64,11 @@ func (u DockerResource) Register(container *restful.Container) {
 		Operation("findUser").
 		Writes(Response{}))
 
+	ws.Route(ws.DELETE("/{id}").To(u.deleteVolume).
+		Operation("findUser").
+		Param(ws.PathParameter("id", "identifier of the volume").DataType("string")).
+		Writes(Response{}))
+
 	container.Add(ws)
 }
 
@@ -124,6 +129,18 @@ func (u DockerResource) getContainers(request *restful.Request, response *restfu
 			log.Fatal("Unable to fetch running containers")
 		}
 		response.WriteEntity(containers)
+	}
+}
+
+func (u DockerResource) deleteVolume(request *restful.Request, response *restful.Response) {
+
+	id := request.PathParameter("id")
+	vols := &volumes.Volumes{}
+
+	err := vols.DeleteVolume(id)
+
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
 	}
 }
 
