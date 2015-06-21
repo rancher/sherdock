@@ -67,12 +67,9 @@ func (u DockerResource) Register(container *restful.Container) {
 
 	ws.Route(ws.DELETE("/{id}").To(u.deleteVolume).
 		Operation("findUser").
-		Param(ws.PathParameter("id", "identifier of the volume").DataType("string")).
-		Writes(Response{}))
+		Param(ws.PathParameter("id", "identifier of the volume").DataType("string")))
 
-	ws.Route(ws.DELETE("/").To(u.deleteVolumes).
-		Operation("findUser").
-		Writes(Response{}))
+	ws.Route(ws.DELETE("/").To(u.deleteVolumes))
 
 	container.Add(ws)
 
@@ -164,8 +161,12 @@ type Volume struct {
 
 func (u DockerResource) deleteVolumes(request *restful.Request, response *restful.Response) {
 	vols := &volumes.Volumes{}
+	err := vols.GetVolumes("/var/lib/docker/volumes")
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	}
 
-	err := vols.DeleteAllOrphans(false)
+	err = vols.DeleteAllOrphans(false)
 
 	if err != nil {
 		response.WriteErrorString(http.StatusInternalServerError, err.Error())
@@ -176,8 +177,12 @@ func (u DockerResource) deleteVolume(request *restful.Request, response *restful
 
 	id := request.PathParameter("id")
 	vols := &volumes.Volumes{}
+	err := vols.GetVolumes("/var/lib/docker/volumes")
+	if err != nil {
+		response.WriteErrorString(http.StatusInternalServerError, err.Error())
+	}
 
-	err := vols.DeleteVolume(id)
+	err = vols.DeleteVolume(id)
 
 	if err != nil {
 		response.WriteErrorString(http.StatusInternalServerError, err.Error())
