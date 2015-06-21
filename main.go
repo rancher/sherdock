@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"net/http"
 
 	"github.com/cloudnautique/go-vol/volumes"
@@ -11,6 +12,7 @@ import (
 	"github.com/rancherio/sherdock/containers"
 	"github.com/rancherio/sherdock/images"
 	"github.com/samalba/dockerclient"
+	"github.com/rancherio/host-api/config"
 )
 
 type Response struct {
