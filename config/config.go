@@ -29,7 +29,7 @@ func defaultConfig() *Config {
 		GCIntervalMinutes:   5,
 		PullIntervalMinutes: 60,
 		ImagesToPull:        []string{"ubuntu:latest", "busybox:latest"},
-		ImagesToNotGC:       []string{"rancher/server"},
+		ImagesToNotGC:       []string{".*"},
 	}
 
 	return &config

@@ -20,7 +20,7 @@ UI at http://localhost:8008
 ## Warning
 
 Sherdock is a Work in Progress and running sherdock might lead to docker images being deleted on the host. The default 
-configuration keeps only 3 images: `ubuntu:latest`, `busybox:latest` and `rancher/server`, so all other images will be deleted. Run at your own risk.
+configuration will not GC anything.  Please change the default configuration from ".*" to just the images you want to save.
 
 ## Developing
 
