@@ -17,6 +17,11 @@ DockerCon 2015 Hackathon Project
 
 UI at http://localhost:8008
 
+## Warning
+
+Sherdock is a Work in Progress and running sherdock might lead to docker images being deleted on the host. The default 
+configuration keeps only 3 images: `ubuntu:latest`, `busybox:latest` and `rancher/server`, so all other images will be deleted. Run at your own risk.
+
 ## Developing
 
 ```bash
