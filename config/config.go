@@ -61,7 +61,7 @@ func SaveConfig(config *Config, name string) error {
 }
 
 func LoadGlobalConfig() error {
-	config, err := GetConfig("")
+	config, err := GetConfig(os.Getenv("SHERDOCK_CONFIG"))
 	if err != nil {
 		return err
 	}
