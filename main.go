@@ -8,9 +8,9 @@ import (
 	"github.com/cloudnautique/go-vol/volumes"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
-	"github.com/rancherio/sherdock/config"
-	"github.com/rancherio/sherdock/containers"
-	"github.com/rancherio/sherdock/images"
+	"github.com/rancher/sherdock/config"
+	"github.com/rancher/sherdock/containers"
+	"github.com/rancher/sherdock/images"
 	"github.com/samalba/dockerclient"
 )
 

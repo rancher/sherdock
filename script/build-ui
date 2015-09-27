@@ -5,4 +5,4 @@ IMAGE=sherdock-ui
 
 cd $(dirname $0)/..
 docker build -t $IMAGE -f Dockerfile.ui .
-docker run -u $(id -u) -v $(pwd):/target $IMAGE cp /go/src/github.com/rancherio/sherdock/bindata_assetfs.go /target
+docker run -u $(id -u) -v $(pwd):/target $IMAGE cp /go/src/github.com/rancher/sherdock/bindata_assetfs.go /target

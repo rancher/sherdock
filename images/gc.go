@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/rancherio/sherdock/config"
+	"github.com/rancher/sherdock/config"
 	"github.com/samalba/dockerclient"
 )
 
