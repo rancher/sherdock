@@ -1,10 +1,10 @@
 package images
 
 import (
-	"github.com/samalba/dockerclient"
 	"fmt"
+	"github.com/rancher/sherdock/config"
+	"github.com/samalba/dockerclient"
 	"time"
-	"github.com/rancherio/sherdock/config"
 )
 
 var url = "unix:///var/run/docker.sock"
@@ -27,7 +27,7 @@ func pullImages() error {
 		fmt.Println("All images pulled.\n")
 		time.Sleep(time.Duration(config.Conf.GCIntervalMinutes) * time.Minute)
 	}
-	return  nil
+	return nil
 }
 
 func StartImageUpdate() {
